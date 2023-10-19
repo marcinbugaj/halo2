@@ -29,6 +29,9 @@ pub use constants::*;
 // Exposed for Sinsemilla.
 pub(crate) use mul::incomplete::DoubleAndAdd;
 
+/// The JubJub scalar field modulus is $q = 2^{251} + \mathsf{t_q}$.
+pub(crate) const T_Q: u128 = 45560315531506369815346746415080538113;
+
 /// A curve point represented in affine (x, y) coordinates, or the
 /// identity represented as (0, 0).
 /// Each coordinate is assigned to a cell.
