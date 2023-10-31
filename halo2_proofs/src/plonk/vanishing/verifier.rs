@@ -15,21 +15,25 @@ use crate::{
 use super::super::{ChallengeX, ChallengeY};
 use super::Argument;
 
+#[derive(Debug)]
 pub struct Committed<C: CurveAffine> {
-    random_poly_commitment: C,
+    pub random_poly_commitment: C,
 }
 
+#[derive(Debug)]
 pub struct Constructed<C: CurveAffine> {
     h_commitments: Vec<C>,
     random_poly_commitment: C,
 }
 
+#[derive(Debug)]
 pub struct PartiallyEvaluated<C: CurveAffine> {
     h_commitments: Vec<C>,
     random_poly_commitment: C,
     random_eval: C::Scalar,
 }
 
+#[derive(Debug)]
 pub struct Evaluated<C: CurveAffine, M: MSM<C>> {
     h_commitment: M,
     random_poly_commitment: C,

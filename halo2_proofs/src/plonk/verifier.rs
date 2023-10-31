@@ -121,9 +121,12 @@ where
 
         (advice_commitments, challenges)
     };
+    // println!("advice_commitments: {:?}", advice_commitments);
+    // println!("challenges: {:?}", challenges);
 
     // Sample theta challenge for keeping lookup columns linearly independent
     let theta: ChallengeTheta<_> = transcript.squeeze_challenge_scalar();
+    // println!("theta: {:?}", theta);
 
     let lookups_permuted = (0..num_proofs)
         .map(|_| -> Result<Vec<_>, _> {
@@ -135,12 +138,15 @@ where
                 .collect::<Result<Vec<_>, _>>()
         })
         .collect::<Result<Vec<_>, _>>()?;
+    // println!("lookups_permuted: {:?}", lookups_permuted);
 
     // Sample beta challenge
     let beta: ChallengeBeta<_> = transcript.squeeze_challenge_scalar();
+    // println!("beta: {:?}", beta);
 
     // Sample gamma challenge
     let gamma: ChallengeGamma<_> = transcript.squeeze_challenge_scalar();
+    // println!("gamma: {:?}", gamma);
 
     let permutations_committed = (0..num_proofs)
         .map(|_| {
@@ -148,6 +154,7 @@ where
             vk.cs.permutation.read_product_commitments(vk, transcript)
         })
         .collect::<Result<Vec<_>, _>>()?;
+    // println!("permutations_committed: {:?}", permutations_committed);
 
     let lookups_committed = lookups_permuted
         .into_iter()
@@ -159,17 +166,23 @@ where
                 .collect::<Result<Vec<_>, _>>()
         })
         .collect::<Result<Vec<_>, _>>()?;
-
+    // println!("lookups_committed: {:?}", lookups_committed);
+    
     let vanishing = vanishing::Argument::read_commitments_before_y(transcript)?;
+    // println!("vanishing: {:?}", vanishing);
 
     // Sample y challenge, which keeps the gates linearly independent.
     let y: ChallengeY<_> = transcript.squeeze_challenge_scalar();
+    // println!("y: {:?}", y);
 
     let vanishing = vanishing.read_commitments_after_y(vk, transcript)?;
+    // println!("vanishing: {:?}", vanishing);
 
     // Sample x challenge, which is used to ensure the circuit is
     // satisfied with high probability.
     let x: ChallengeX<_> = transcript.squeeze_challenge_scalar();
+    // println!("x: {:?}", x);
+
     let instance_evals = if V::QUERY_INSTANCE {
         (0..num_proofs)
             .map(|_| -> Result<Vec<_>, _> {
@@ -178,6 +191,7 @@ where
             .collect::<Result<Vec<_>, _>>()?
     } else {
         let xn = x.pow(&[params.n() as u64, 0, 0, 0]);
+        // println!("xn: {:?}", xn);
         let (min_rotation, max_rotation) =
             vk.cs
                 .instance_queries
@@ -191,11 +205,14 @@ where
                         (min, max)
                     }
                 });
+        // println!("min_rotation: {:?}", min_rotation);
+        // println!("max_rotation: {:?}", max_rotation);
         let max_instance_len = instances
             .iter()
             .flat_map(|instance| instance.iter().map(|instance| instance.len()))
             .max_by(Ord::cmp)
             .unwrap_or_default();
+        // println!("max_instance_len: {:?}", max_instance_len);
         let l_i_s = &vk.domain.l_i_range(
             *x,
             xn,
@@ -216,21 +233,30 @@ where
             })
             .collect::<Vec<_>>()
     };
+    // println!("instance: {:?}", instances);
 
     let advice_evals = (0..num_proofs)
         .map(|_| -> Result<Vec<_>, _> { read_n_scalars(transcript, vk.cs.advice_queries.len()) })
         .collect::<Result<Vec<_>, _>>()?;
+    // println!("advice_evals: {:?}", advice_evals);
 
     let fixed_evals = read_n_scalars(transcript, vk.cs.fixed_queries.len())?;
+    // println!("fixed_evals: {:?}", fixed_evals);
 
+    // extract random eval scalar
     let vanishing = vanishing.evaluate_after_x(transcript)?;
+    // println!("vanishing: {:?}", vanishing);
+
 
     let permutations_common = vk.permutation.evaluate(transcript)?;
+    // println!("permutation_common: {:?}", permutations_common );
+
 
     let permutations_evaluated = permutations_committed
         .into_iter()
         .map(|permutation| permutation.evaluate(transcript))
         .collect::<Result<Vec<_>, _>>()?;
+    // println!("permutations_evaluated: {:?}", permutations_evaluated);
 
     let lookups_evaluated = lookups_committed
         .into_iter()
@@ -241,6 +267,9 @@ where
                 .collect::<Result<Vec<_>, _>>()
         })
         .collect::<Result<Vec<_>, _>>()?;
+    // println!("lookups_evaluated: {:?}", lookups_evaluated);
+
+// above objects get translated correctly
 
     // This check ensures the circuit is satisfied so long as the polynomial
     // commitments open to the correct values.
@@ -325,6 +354,7 @@ where
 
         vanishing.verify(params, expressions, y, xn)
     };
+    // println!("vanishing: {:?}", vanishing);
 
     let queries = instance_commitments
         .iter()
@@ -389,6 +419,7 @@ where
         )
         .chain(permutations_common.queries(&vk.permutation, x))
         .chain(vanishing.queries(x));
+    // println!("queries: {:?}", queries);
 
     // We are now convinced the circuit is satisfied so long as the
     // polynomial commitments open to the correct values.

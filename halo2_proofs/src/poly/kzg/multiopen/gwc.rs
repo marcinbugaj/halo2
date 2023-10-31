@@ -27,6 +27,7 @@ type ChallengeU<F> = ChallengeScalar<F, U>;
 struct V {}
 type ChallengeV<F> = ChallengeScalar<F, V>;
 
+#[derive(Debug)]
 struct CommitmentData<F: Field, Q: Query<F>> {
     queries: Vec<Q>,
     point: F,

@@ -27,7 +27,7 @@ mod evaluation;
 mod keygen;
 mod lookup;
 pub mod permutation;
-mod vanishing;
+pub mod vanishing;
 
 mod prover;
 mod verifier;
