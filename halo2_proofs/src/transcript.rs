@@ -123,8 +123,8 @@ where
     fn init(reader: R) -> Self {
         Blake2bRead {
             state: Blake2bParams::new()
-                .hash_length(64)
-                .personal(b"Halo2-Transcript")
+                .hash_length(32)
+                // .personal(b"Halo2-Transcript")
                 .to_state(),
             reader,
             _marker: PhantomData,
@@ -218,8 +218,10 @@ where
     fn squeeze_challenge(&mut self) -> Challenge255<C> {
         self.state.update(&[BLAKE2B_PREFIX_CHALLENGE]);
         let hasher = self.state.clone();
-        let result: [u8; 64] = hasher.finalize().as_bytes().try_into().unwrap();
-        Challenge255::<C>::new(&result)
+        let result: [u8; 32] = hasher.finalize().as_bytes().try_into().unwrap();
+        let mut padded_output: [u8; 64] = [0; 64];
+        padded_output[..32].copy_from_slice(&result);
+        Challenge255::<C>::new(&padded_output)
     }
 
     fn common_point(&mut self, point: C) -> io::Result<()> {
@@ -313,8 +315,8 @@ where
     fn init(writer: W) -> Self {
         Blake2bWrite {
             state: Blake2bParams::new()
-                .hash_length(64)
-                .personal(b"Halo2-Transcript")
+                .hash_length(32)
+                // .personal(b"Halo2-Transcript")
                 .to_state(),
             writer,
             _marker: PhantomData,
@@ -392,8 +394,10 @@ where
     fn squeeze_challenge(&mut self) -> Challenge255<C> {
         self.state.update(&[BLAKE2B_PREFIX_CHALLENGE]);
         let hasher = self.state.clone();
-        let result: [u8; 64] = hasher.finalize().as_bytes().try_into().unwrap();
-        Challenge255::<C>::new(&result)
+        let result: [u8; 32] = hasher.finalize().as_bytes().try_into().unwrap();
+        let mut padded_output: [u8; 64] = [0; 64];
+        padded_output[..32].copy_from_slice(&result);
+        Challenge255::<C>::new(&padded_output)
     }
 
     fn common_point(&mut self, point: C) -> io::Result<()> {
