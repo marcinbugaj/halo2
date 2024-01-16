@@ -28,13 +28,13 @@ struct V {}
 type ChallengeV<F> = ChallengeScalar<F, V>;
 
 #[derive(Debug)]
-struct CommitmentData<F: Field, Q: Query<F>> {
-    queries: Vec<Q>,
-    point: F,
-    _marker: PhantomData<F>,
+pub struct CommitmentData<F: Field, Q: Query<F>> {
+    pub queries: Vec<Q>,
+    pub point: F,
+    pub _marker: PhantomData<F>,
 }
 
-fn construct_intermediate_sets<F: Field, I, Q: Query<F>>(queries: I) -> Vec<CommitmentData<F, Q>>
+pub fn construct_intermediate_sets<F: Field, I, Q: Query<F>>(queries: I) -> Vec<CommitmentData<F, Q>>
 where
     I: IntoIterator<Item = Q> + Clone,
 {

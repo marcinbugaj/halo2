@@ -61,6 +61,7 @@ where
         I: IntoIterator<Item = VerifierQuery<'com, E::G1Affine, MSMKZG<E>>> + Clone,
     {
         let v: ChallengeV<_> = transcript.squeeze_challenge_scalar();
+        // println!("v: {:?}", v);
 
         let commitment_data = construct_intermediate_sets(queries);
         // println!("commitment_data: {:?}", commitment_data);
@@ -68,8 +69,10 @@ where
         let w: Vec<E::G1Affine> = (0..commitment_data.len())
             .map(|_| transcript.read_point().map_err(|_| Error::SamplingError))
             .collect::<Result<Vec<E::G1Affine>, Error>>()?;
+        // println!("w: {:?}", w);
 
         let u: ChallengeU<_> = transcript.squeeze_challenge_scalar();
+        // println!("u: {:?}", u);
 
         let mut commitment_multi = MSMKZG::<E>::new();
         let mut eval_multi = E::Scalar::ZERO;
@@ -111,6 +114,7 @@ where
                     (commitment_acc, eval_acc + eval)
                 })
                 .unwrap();
+            // println!("commitment_batch: {:?}", commitment_batch);
 
             commitment_batch.scale(power_of_u);
             commitment_multi.add_msm(&commitment_batch);
@@ -119,6 +123,12 @@ where
             witness_with_aux.append_term(power_of_u * z, wi.into());
             witness.append_term(power_of_u, wi.into());
         }
+
+
+        // println!("wit: {:?}", witness);
+        // println!("wit_aux: {:?}", witness_with_aux);
+        // println!("eval_multi: {:?}", eval_multi);
+        // println!("commitment_multi: {:?}", commitment_multi);
 
         msm_accumulator.left.add_msm(&witness);
 

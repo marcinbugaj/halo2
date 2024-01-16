@@ -120,9 +120,9 @@ impl<'params, E: MultiMillerLoop + Debug> From<&'params ParamsKZG<E>> for DualMS
 /// Two channel MSM accumulator
 #[derive(Debug, Clone)]
 pub struct DualMSM<'a, E: Engine> {
-    pub(crate) params: &'a ParamsKZG<E>,
-    pub(crate) left: MSMKZG<E>,
-    pub(crate) right: MSMKZG<E>,
+    pub params: &'a ParamsKZG<E>,
+    pub left: MSMKZG<E>,
+    pub right: MSMKZG<E>,
 }
 
 impl<'a, E: MultiMillerLoop + Debug> DualMSM<'a, E> {

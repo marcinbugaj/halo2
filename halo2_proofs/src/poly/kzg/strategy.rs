@@ -42,7 +42,7 @@ where
 
 /// KZG specific operations
 impl<'params, E: MultiMillerLoop + Debug> GuardKZG<'params, E> {
-    pub(crate) fn new(msm_accumulator: DualMSM<'params, E>) -> Self {
+    pub fn new(msm_accumulator: DualMSM<'params, E>) -> Self {
         Self { msm_accumulator }
     }
 }
@@ -70,7 +70,7 @@ impl<'params, E: MultiMillerLoop + Debug> AccumulatorStrategy<'params, E> {
 /// A verifier that checks a single proof
 #[derive(Clone, Debug)]
 pub struct SingleStrategy<'params, E: Engine> {
-    pub(crate) msm: DualMSM<'params, E>,
+    pub msm: DualMSM<'params, E>,
 }
 
 impl<'params, E: MultiMillerLoop + Debug> SingleStrategy<'params, E> {

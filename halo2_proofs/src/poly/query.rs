@@ -29,7 +29,7 @@ pub struct ProverQuery<'com, C: CurveAffine> {
 }
 
 #[doc(hidden)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone,Debug)]
 pub struct PolynomialPointer<'com, C: CurveAffine> {
     pub(crate) poly: &'com Polynomial<C::Scalar, Coeff>,
     pub(crate) blind: Blind<C::Scalar>,
@@ -78,6 +78,32 @@ impl<'com, C: CurveAffine, M: MSM<C>> VerifierQuery<'com, C, M> {
         }
     }
 }
+
+#[derive(Debug, Clone)]
+pub struct MinimalVerifierQuery<C: CurveAffine> {
+    /// Point at which poly is evaluated
+    pub point: C::Scalar,
+    /// Commitment
+    pub commitment: C,
+    /// Evaluation of polynomial at query point
+    pub eval: C::Scalar,
+}
+
+impl<C: CurveAffine> Query<C::Scalar> for MinimalVerifierQuery<C> {
+    type Commitment = C;
+    type Eval = C::Scalar;
+
+    fn get_point(&self) -> C::Scalar {
+        self.point
+    }
+    fn get_eval(&self) -> Self::Eval {
+        self.eval
+    }
+    fn get_commitment(&self) -> Self::Commitment {
+        self.commitment
+    }
+}
+
 
 /// A polynomial query at a point
 #[derive(Debug)]
